@@ -1,11 +1,15 @@
 FROM i386/ubuntu:19.10
 
-MAINTAINER Borja Rodríguez Diliz <borja.rodriguez.diliz@gmail.com>
+LABEL MAINTAINER="Xannor Archouse <xannor@users.noreply.github.com>"
+
+ENV TOOLCHAIN_VERSION 8.2-2018.08
+ENV TOOLCHAIN_DOWNLOAD https://developer.arm.com/-/media/Files/downloads/gnu-a/${TOOLCHAIN_VERSION}/gcc-arm-${TOOLCHAIN_VERSION}-x86_64-arm-linux-gnueabihf.tar.xz
+ENV TOOLCHAIN_DOWNLOAD_SHA256 5b3f20e1327edc3073e545a5bd3d15f33e7f94181ff4e37a76e95924c1b439b9
 
 ################# Install packages ################
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y software-properties-common \
-        language-pack-en-base sudo supervisor git build-essential unzip p7zip-full mtd-tools binwalk \
+        language-pack-en-base sudo supervisor git build-essential xz-utils unzip p7zip-full mtd-tools binwalk \
         rsync autoconf bison flex yui-compressor libxml2-utils
 
 ################# Install packages ################
@@ -26,7 +30,11 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 ################ End SSH ################
 
 ################ Section cross-compiling ################
-RUN tar xfvz /opt/yi/arm-linux-gnueabihf-4.8.3-201404.tar.gz -C /opt/yi/
+RUN curl -fsSL "${TOOLCHAIN_DOWNLOAD}" -o toochain.tar.xz \
+  && echo "${TOOLCHAIN_DOWNLOAD_SHA256} toolchain.tar.xz" | sha256sum -c - \
+  && tar -C /opt/yi/ -xfvJ toolchain.tar.xz \
+  && rm toolchain.tar.xz
+#RUN tar xfvJ /opt/yi/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf.tar.xz -C /opt/yi/
 ################ End cross-compiling ################
 
 ################ Section jefferson ################
