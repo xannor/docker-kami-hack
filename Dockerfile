@@ -10,7 +10,7 @@ ENV TOOLCHAIN_DOWNLOAD_SHA256 5b3f20e1327edc3073e545a5bd3d15f33e7f94181ff4e37a76
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -qq install -y software-properties-common \
         language-pack-en-base sudo supervisor git build-essential xz-utils unzip p7zip-full mtd-tools binwalk \
-        rsync autoconf bison flex yui-compressor libxml2-utils
+        rsync autoconf bison flex yui-compressor libxml2-utils zlib1g-dev libssl-dev
 
 ################# Install packages ################
 
@@ -30,9 +30,9 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 ################ End SSH ################
 
 ################ Section cross-compiling ################
-RUN curl -fsSL "${TOOLCHAIN_DOWNLOAD}" -o toochain.tar.xz \
+RUN wget -q -O toolchain.tar.xz "${TOOLCHAIN_DOWNLOAD}" \
   && echo "${TOOLCHAIN_DOWNLOAD_SHA256} toolchain.tar.xz" | sha256sum -c - \
-  && tar -C /opt/yi/ -xfvJ toolchain.tar.xz \
+  && tar -C /opt/yi/ -xvJf toolchain.tar.xz \
   && rm toolchain.tar.xz
 #RUN tar xfvJ /opt/yi/gcc-arm-8.2-2018.08-x86_64-arm-linux-gnueabihf.tar.xz -C /opt/yi/
 ################ End cross-compiling ################
